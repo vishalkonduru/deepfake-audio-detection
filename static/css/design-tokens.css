@@ -1,0 +1,57 @@
+:root {
+  /* Color palette */
+  --clr-bg: #030712;
+  --clr-surface: #0c1120;
+  --clr-surface-2: #111827;
+  --clr-border: rgba(255,255,255,0.07);
+  --clr-border-glow: rgba(0,255,180,0.25);
+
+  /* Brand accent — cyan-green */
+  --clr-accent: #00ffb2;
+  --clr-accent-dim: #00d98a;
+  --clr-accent-muted: rgba(0,255,178,0.12);
+
+  /* Danger — used for deepfake hits */
+  --clr-danger: #ff4d6d;
+  --clr-danger-dim: #c9243f;
+  --clr-danger-muted: rgba(255,77,109,0.12);
+
+  /* Warning */
+  --clr-warn: #f59e0b;
+  --clr-warn-muted: rgba(245,158,11,0.12);
+
+  /* Text hierarchy */
+  --clr-text-primary: #f1f5f9;
+  --clr-text-secondary: #94a3b8;
+  --clr-text-muted: #475569;
+
+  /* Glow radii */
+  --glow-accent: 0 0 40px rgba(0,255,178,0.3), 0 0 80px rgba(0,255,178,0.1);
+  --glow-danger: 0 0 40px rgba(255,77,109,0.35), 0 0 80px rgba(255,77,109,0.12);
+
+  /* Typography */
+  --font-display: 'Syne', 'DM Sans', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* Transitions */
+  --ease-bounce: cubic-bezier(0.34,1.56,0.64,1);
+  --ease-smooth: cubic-bezier(0.4,0,0.2,1);
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --dur-slow: 600ms;
+}
