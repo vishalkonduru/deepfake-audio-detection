@@ -39,18 +39,6 @@ def health():
     return jsonify({"status": "ok"})
 
 
-@app.route("/info", methods=["GET"])
-def info():
-    return jsonify(
-        {
-            "sample_rate": config.SAMPLE_RATE,
-            "n_mfcc": config.N_MFCC,
-            "supported_formats": list(config.AUDIO_EXTS),
-            "max_file_size_mb": config.MAX_FILE_SIZE_MB,
-        }
-    )
-
-
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:
@@ -60,13 +48,9 @@ def predict():
     if f.filename == "":
         return jsonify({"error": "empty filename"}), 400
 
-    ext = os.path.splitext(f.filename or "")[1].lower()
-    if ext not in config.AUDIO_EXTS:
-        return jsonify({"error": f"unsupported format: {ext}"}), 415
-
     tmp_path = None
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
             f.save(tmp.name)
             tmp_path = tmp.name
 
@@ -76,12 +60,10 @@ def predict():
         pred = model.predict(feat)[0]
 
         label = "REAL" if pred == 0 else "FAKE"
-        confidence = float(proba[0] if pred == 0 else proba[1])
 
         return jsonify(
             {
                 "label": label,
-                "confidence": confidence,
                 "probabilities": {
                     "real": float(proba[0]),
                     "fake": float(proba[1]),
