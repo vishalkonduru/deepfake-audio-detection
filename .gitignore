@@ -1,20 +1,39 @@
-.venv/
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.log
+*.py[cod]
+*$py.class
+*.so
 
-# Data and artifacts
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Data & model artifacts
 data/
-raw_data/
-*.zip
 features.npy
 labels.npy
 model.joblib
+scaler.joblib
+metrics.json
+hparam_results.json
+evaluation/
 
-# OS / editor junk
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Testing
+.coverage
+coverage.xml
+.pytest_cache/
+
+# OS
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
