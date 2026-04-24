@@ -34,14 +34,21 @@ def batch_predict(input_dir: str, output_format: str = "csv") -> list:
             feat = extract_all_features(fpath).reshape(1, -1)
             pred = model.predict(feat)[0]
             proba = model.predict_proba(feat)[0]
-            results.append({
-                "file": fname,
-                "label": "FAKE" if pred == 1 else "REAL",
-                "confidence": float(max(proba)),
-                "p_real": float(proba[0]),
-                "p_fake": float(proba[1]),
-            })
-            log.info("%s -> %s (conf=%.3f)", fname, results[-1]["label"], results[-1]["confidence"])
+            results.append(
+                {
+                    "file": fname,
+                    "label": "FAKE" if pred == 1 else "REAL",
+                    "confidence": float(max(proba)),
+                    "p_real": float(proba[0]),
+                    "p_fake": float(proba[1]),
+                }
+            )
+            log.info(
+                "%s -> %s (conf=%.3f)",
+                fname,
+                results[-1]["label"],
+                results[-1]["confidence"],
+            )
         except Exception as exc:
             log.warning("Failed on %s: %s", fname, exc)
 
@@ -64,7 +71,9 @@ if __name__ == "__main__":
     else:
         out_path = args.output + ".csv"
         with open(out_path, "w", newline="") as fh:
-            writer = csv.DictWriter(fh, fieldnames=["file", "label", "confidence", "p_real", "p_fake"])
+            writer = csv.DictWriter(
+                fh, fieldnames=["file", "label", "confidence", "p_real", "p_fake"]
+            )
             writer.writeheader()
             writer.writerows(results)
 

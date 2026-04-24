@@ -2,8 +2,9 @@
 
 import argparse
 import json
-import numpy as np
+
 import joblib
+import numpy as np
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import train_test_split
 
@@ -15,9 +16,14 @@ log = get_logger(__name__)
 FEATURE_NAMES = (
     [f"mfcc_mean_{i}" for i in range(config.N_MFCC)]
     + [f"mfcc_std_{i}" for i in range(config.N_MFCC)]
-    + ["spec_centroid_mean", "spec_centroid_std",
-       "spec_bandwidth_mean", "spec_bandwidth_std",
-       "spec_rolloff_mean", "spec_rolloff_std"]
+    + [
+        "spec_centroid_mean",
+        "spec_centroid_std",
+        "spec_bandwidth_mean",
+        "spec_bandwidth_std",
+        "spec_rolloff_mean",
+        "spec_rolloff_std",
+    ]
     + [f"chroma_mean_{i}" for i in range(12)]
     + [f"chroma_std_{i}" for i in range(12)]
 )
@@ -35,19 +41,20 @@ def run_permutation_importance(
     y = np.load(labels_path)
 
     _, X_test, _, y_test = train_test_split(
-        X, y, test_size=config.TEST_SIZE,
-        random_state=config.RANDOM_STATE, stratify=y
+        X, y, test_size=config.TEST_SIZE, random_state=config.RANDOM_STATE, stratify=y
     )
 
     log.info("Running permutation importance (n_repeats=%d) ...", n_repeats)
     result = permutation_importance(
-        model, X_test, y_test,
+        model,
+        X_test,
+        y_test,
         n_repeats=n_repeats,
         random_state=config.RANDOM_STATE,
         scoring="roc_auc",
     )
 
-    names = FEATURE_NAMES[:X_test.shape[1]]
+    names = FEATURE_NAMES[: X_test.shape[1]]
     ranked = sorted(
         zip(names, result.importances_mean, result.importances_std),
         key=lambda x: x[1],

@@ -1,0 +1,83 @@
+/* ============================================================
+   DESIGN TOKENS — Deepfake Audio Detection
+   Senior Frontend Engineer Design System v2.0
+   ============================================================ */
+
+:root {
+  /* Brand Colors */
+  --clr-bg:          #050810;
+  --clr-bg-2:        #080d1a;
+  --clr-surface:     rgba(10, 16, 35, 0.72);
+  --clr-surface-2:   rgba(14, 22, 48, 0.85);
+  --clr-border:      rgba(56, 189, 248, 0.12);
+  --clr-border-2:    rgba(56, 189, 248, 0.25);
+
+  /* Accent Palette */
+  --clr-cyan:        #38bdf8;
+  --clr-cyan-dim:    rgba(56, 189, 248, 0.15);
+  --clr-cyan-glow:   rgba(56, 189, 248, 0.4);
+  --clr-green:       #4ade80;
+  --clr-green-dim:   rgba(74, 222, 128, 0.15);
+  --clr-green-glow:  rgba(74, 222, 128, 0.4);
+  --clr-red:         #f87171;
+  --clr-red-dim:     rgba(248, 113, 113, 0.15);
+  --clr-red-glow:    rgba(248, 113, 113, 0.4);
+  --clr-amber:       #fbbf24;
+  --clr-amber-dim:   rgba(251, 191, 36, 0.15);
+  --clr-amber-glow:  rgba(251, 191, 36, 0.4);
+  --clr-violet:      #a78bfa;
+  --clr-violet-dim:  rgba(167, 139, 250, 0.15);
+
+  /* Text */
+  --txt-primary:     #f0f6ff;
+  --txt-secondary:   #8ba3c7;
+  --txt-muted:       #4a6080;
+  --txt-accent:      #38bdf8;
+
+  /* Typography */
+  --font-display:    'Syne', sans-serif;
+  --font-mono:       'JetBrains Mono', monospace;
+  --font-body:       'DM Sans', sans-serif;
+
+  /* Spacing Scale */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* Border Radius */
+  --r-sm:  6px;
+  --r-md:  12px;
+  --r-lg:  20px;
+  --r-xl:  28px;
+  --r-2xl: 40px;
+
+  /* Shadows */
+  --shadow-cyan:   0 0 40px rgba(56, 189, 248, 0.15);
+  --shadow-green:  0 0 40px rgba(74, 222, 128, 0.15);
+  --shadow-red:    0 0 40px rgba(248, 113, 113, 0.15);
+  --shadow-card:   0 8px 48px rgba(0, 0, 0, 0.6);
+
+  /* Transitions */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:   150ms;
+  --dur-base:   280ms;
+  --dur-slow:   480ms;
+  --dur-xslow:  700ms;
+
+  /* Z-index layers */
+  --z-bg:     0;
+  --z-card:   10;
+  --z-header: 100;
+  --z-modal:  200;
+  --z-toast:  300;
+  --z-cursor: 9999;
+}

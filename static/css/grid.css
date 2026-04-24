@@ -1,0 +1,205 @@
+/* ============================================================
+   RESPONSIVE GRID & HERO SECTION
+   ============================================================ */
+
+/* === Hero === */
+.hero {
+  padding: var(--sp-16) 0 var(--sp-12);
+  text-align: center;
+  position: relative;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--clr-cyan);
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(56,189,248,0.25);
+  background: var(--clr-cyan-dim);
+  margin-bottom: var(--sp-6);
+  animation: slideInDown 0.5s var(--ease-out) 0.1s both;
+}
+
+.hero-eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--clr-cyan);
+  box-shadow: 0 0 6px var(--clr-cyan);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--txt-primary);
+  margin-bottom: var(--sp-5);
+  animation: slideInDown 0.6s var(--ease-out) 0.15s both;
+}
+
+.hero-title .line-accent {
+  display: block;
+  background: linear-gradient(120deg, var(--clr-cyan) 0%, var(--clr-violet) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-desc {
+  font-size: 17px;
+  color: var(--txt-secondary);
+  max-width: 520px;
+  margin: 0 auto var(--sp-8);
+  line-height: 1.65;
+  animation: slideInDown 0.6s var(--ease-out) 0.20s both;
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  animation: fadeIn 0.6s var(--ease-out) 0.25s both;
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-8);
+  margin-top: var(--sp-12);
+  padding-top: var(--sp-8);
+  border-top: 1px solid var(--clr-border);
+  flex-wrap: wrap;
+  animation: fadeIn 0.8s var(--ease-out) 0.3s both;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--txt-primary);
+  line-height: 1;
+}
+
+.hero-stat-value .accent { color: var(--clr-cyan); }
+
+.hero-stat-label {
+  font-size: 12px;
+  color: var(--txt-muted);
+  margin-top: var(--sp-1);
+}
+
+/* Divider for stat row */
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(180deg, transparent, var(--clr-border) 50%, transparent);
+}
+
+/* === Main Analysis Grid === */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === Feature Cards Row === */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+  margin-top: var(--sp-12);
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero { padding: var(--sp-10) 0 var(--sp-8); }
+  .hero-stats { gap: var(--sp-6); }
+  .hero-stat-divider { display: none; }
+}
+
+@media (max-width: 480px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Feature card */
+.feature-card {
+  padding: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.feature-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-card-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--txt-primary);
+}
+
+.feature-card-desc {
+  font-size: 13.5px;
+  color: var(--txt-secondary);
+  line-height: 1.6;
+}
+
+/* Section header */
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--txt-primary);
+}
+
+.section-subtitle {
+  font-size: 13.5px;
+  color: var(--txt-secondary);
+  margin-top: var(--sp-1);
+}

@@ -1,29 +1,35 @@
 """Model training script with StandardScaler and improved reporting."""
 
-import numpy as np
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
-import joblib
 import json
+
+import joblib
+import numpy as np
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 import config
 
 
 def build_pipeline() -> Pipeline:
     """Return a StandardScaler + SVC pipeline."""
-    return Pipeline([
-        ("scaler", StandardScaler()),
-        ("clf", SVC(
-            kernel=config.SVM_KERNEL,
-            C=config.SVM_C,
-            gamma=config.SVM_GAMMA,
-            probability=True,
-            random_state=config.RANDOM_STATE,
-        )),
-    ])
+    return Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            (
+                "clf",
+                SVC(
+                    kernel=config.SVM_KERNEL,
+                    C=config.SVM_C,
+                    gamma=config.SVM_GAMMA,
+                    probability=True,
+                    random_state=config.RANDOM_STATE,
+                ),
+            ),
+        ]
+    )
 
 
 if __name__ == "__main__":
@@ -36,7 +42,8 @@ if __name__ == "__main__":
     print("Label counts:", dict(zip(unique, counts)))
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
+        X,
+        y,
         test_size=config.TEST_SIZE,
         random_state=config.RANDOM_STATE,
         stratify=y,

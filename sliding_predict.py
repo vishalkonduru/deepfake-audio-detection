@@ -1,9 +1,10 @@
 """Streaming prediction for long audio files (sliding window approach)."""
 
 import argparse
-import numpy as np
-import librosa
+
 import joblib
+import librosa
+import numpy as np
 
 import config
 from extract_features import _features_from_waveform
@@ -32,11 +33,13 @@ def sliding_predict(
         chunk = y[start : start + win]
         feat = _features_from_waveform(chunk, sr).reshape(1, -1)
         proba = model.predict_proba(feat)[0]
-        segments.append({
-            "start_sec": round(start / sr, 2),
-            "end_sec": round((start + win) / sr, 2),
-            "p_fake": float(proba[1]),
-        })
+        segments.append(
+            {
+                "start_sec": round(start / sr, 2),
+                "end_sec": round((start + win) / sr, 2),
+                "p_fake": float(proba[1]),
+            }
+        )
         start += hop
 
     if not segments:
@@ -63,4 +66,6 @@ if __name__ == "__main__":
     result = sliding_predict(args.file, model, args.window, args.hop)
     print(f"Overall: {result['label']} (mean_p_fake={result['mean_p_fake']:.3f})")
     for seg in result["segments"]:
-        print(f"  [{seg['start_sec']:6.1f}s – {seg['end_sec']:6.1f}s]  p_fake={seg['p_fake']:.3f}")
+        print(
+            f"  [{seg['start_sec']:6.1f}s \u2013 {seg['end_sec']:6.1f}s]  p_fake={seg['p_fake']:.3f}"
+        )

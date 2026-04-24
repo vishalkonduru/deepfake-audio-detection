@@ -1,10 +1,11 @@
 """Feature extraction with augmentation support for training set expansion."""
 
 import os
-import numpy as np
-import librosa
-from tqdm import tqdm
 from typing import Tuple
+
+import librosa
+import numpy as np
+from tqdm import tqdm
 
 import config
 from augment import augment
@@ -47,9 +48,16 @@ def _features_from_waveform(y: np.ndarray, sr: int) -> np.ndarray:
     centroid = librosa.feature.spectral_centroid(y=y, sr=sr)
     bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr)
     rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
-    spec_feat = np.array([np.mean(centroid), np.std(centroid),
-                          np.mean(bandwidth), np.std(bandwidth),
-                          np.mean(rolloff), np.std(rolloff)])
+    spec_feat = np.array(
+        [
+            np.mean(centroid),
+            np.std(centroid),
+            np.mean(bandwidth),
+            np.std(bandwidth),
+            np.mean(rolloff),
+            np.std(rolloff),
+        ]
+    )
 
     chroma = librosa.feature.chroma_stft(y=y, sr=sr)
     chroma_feat = np.concatenate([np.mean(chroma, axis=1), np.std(chroma, axis=1)])
@@ -104,4 +112,9 @@ if __name__ == "__main__":
     X, y = load_data(use_augmentation=args.augment)
     np.save(config.FEATURES_OUT, X)
     np.save(config.LABELS_OUT, y)
-    log.info("Saved features %s, labels %s  shape=%s", config.FEATURES_OUT, config.LABELS_OUT, X.shape)
+    log.info(
+        "Saved features %s, labels %s  shape=%s",
+        config.FEATURES_OUT,
+        config.LABELS_OUT,
+        X.shape,
+    )

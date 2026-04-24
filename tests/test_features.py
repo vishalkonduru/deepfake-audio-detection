@@ -1,19 +1,25 @@
 """Unit tests for feature extraction."""
 
+import tempfile
+
 import numpy as np
 import pytest
-import tempfile
 import soundfile as sf
 
-from extract_features import extract_mfcc, extract_spectral, extract_chroma, extract_all_features
 import config
+from extract_features import (
+    extract_all_features,
+    extract_chroma,
+    extract_mfcc,
+    extract_spectral,
+)
 
 
 def _make_sine_wav(freq: float = 440.0, duration: float = 1.0) -> str:
     """Generate a short sine-wave WAV and return its temp path."""
     sr = config.SAMPLE_RATE
     t = np.linspace(0, duration, int(sr * duration), endpoint=False)
-    wave = 0.5 * np.sin(2 * np.pi * freq * t).astype(np.float32)
+    wave = (0.5 * np.sin(2 * np.pi * freq * t)).astype(np.float32)
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
     sf.write(tmp.name, wave, sr)
     return tmp.name

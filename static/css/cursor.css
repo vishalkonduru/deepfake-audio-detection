@@ -1,0 +1,54 @@
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+
+#cursor-dot,
+#cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+#cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--clr-cyan);
+  box-shadow: 0 0 10px var(--clr-cyan);
+  transition: transform var(--dur-fast) var(--ease-out),
+              background var(--dur-base) var(--ease-out);
+}
+
+#cursor-ring {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(56, 189, 248, 0.5);
+  transition: transform var(--dur-slow) var(--ease-out),
+              width var(--dur-base) var(--ease-spring),
+              height var(--dur-base) var(--ease-spring),
+              border-color var(--dur-base) var(--ease-out);
+  mix-blend-mode: screen;
+}
+
+body:has(button:hover, a:hover, [data-cursor-hover]:hover) #cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: var(--clr-cyan);
+  background: var(--clr-cyan-dim);
+}
+
+body:has(button:hover, a:hover, [data-cursor-hover]:hover) #cursor-dot {
+  transform: translate(-50%, -50%) scale(0);
+}
+
+/* Clicking state */
+body.is-clicking #cursor-dot {
+  transform: translate(-50%, -50%) scale(1.8);
+  background: white;
+}
+body.is-clicking #cursor-ring {
+  transform: translate(-50%, -50%) scale(0.7);
+}

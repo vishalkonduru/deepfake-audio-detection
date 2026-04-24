@@ -1,7 +1,7 @@
 """Zero-Crossing Rate and RMS energy feature helpers."""
 
-import numpy as np
 import librosa
+import numpy as np
 
 import config
 

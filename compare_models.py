@@ -1,13 +1,14 @@
 """Model comparison script: runs SVM and RF and prints a side-by-side report."""
 
 import json
+
 import numpy as np
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 import config
 from logger import get_logger
@@ -15,18 +16,34 @@ from logger import get_logger
 log = get_logger(__name__)
 
 MODELS = {
-    "SVM-RBF": Pipeline([
-        ("sc", StandardScaler()),
-        ("clf", SVC(kernel="rbf", probability=True, random_state=config.RANDOM_STATE)),
-    ]),
-    "RandomForest": Pipeline([
-        ("sc", StandardScaler()),
-        ("clf", RandomForestClassifier(n_estimators=300, random_state=config.RANDOM_STATE, n_jobs=-1)),
-    ]),
-    "GradientBoosting": Pipeline([
-        ("sc", StandardScaler()),
-        ("clf", GradientBoostingClassifier(n_estimators=200, random_state=config.RANDOM_STATE)),
-    ]),
+    "SVM-RBF": Pipeline(
+        [
+            ("sc", StandardScaler()),
+            ("clf", SVC(kernel="rbf", probability=True, random_state=config.RANDOM_STATE)),
+        ]
+    ),
+    "RandomForest": Pipeline(
+        [
+            ("sc", StandardScaler()),
+            (
+                "clf",
+                RandomForestClassifier(
+                    n_estimators=300, random_state=config.RANDOM_STATE, n_jobs=-1
+                ),
+            ),
+        ]
+    ),
+    "GradientBoosting": Pipeline(
+        [
+            ("sc", StandardScaler()),
+            (
+                "clf",
+                GradientBoostingClassifier(
+                    n_estimators=200, random_state=config.RANDOM_STATE
+                ),
+            ),
+        ]
+    ),
 }
 
 

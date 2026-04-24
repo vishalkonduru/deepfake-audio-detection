@@ -1,27 +1,24 @@
 """Integration tests for the Flask API."""
 
+import importlib
 import io
+
+import joblib
 import numpy as np
 import pytest
 import soundfile as sf
-import tempfile
-
-import config
-
-# Patch model loading before importing app
-import joblib
-from unittest.mock import MagicMock, patch
+from sklearn.datasets import make_classification
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+
+import config
 
 
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
     """Create a Flask test client with a mock model."""
-    # Build a tiny fitted pipeline so predict_proba works
-    from sklearn.datasets import make_classification
-    X, y = make_classification(n_samples=20, n_features=110, random_state=0)
+    X, y = make_classification(n_samples=20, n_features=80, random_state=0)
     pipe = Pipeline([("sc", StandardScaler()), ("clf", SVC(probability=True))])
     pipe.fit(X, y)
 
@@ -29,10 +26,11 @@ def client(tmp_path, monkeypatch):
     joblib.dump(pipe, model_path)
     monkeypatch.setattr(config, "MODEL_OUT", model_path)
 
-    # Re-import app with patched config
-    import importlib
     import app as flask_app
+
     importlib.reload(flask_app)
+    # Reset the lazy-loaded model so it picks up the patched path
+    flask_app._model = None
     flask_app.app.config["TESTING"] = True
     with flask_app.app.test_client() as c:
         yield c
@@ -54,7 +52,7 @@ class TestHealthEndpoint:
         assert resp.status_code == 200
 
     def test_body(self, client):
-        data = resp = client.get("/health").get_json()
+        data = client.get("/health").get_json()
         assert data["status"] == "ok"
 
 
