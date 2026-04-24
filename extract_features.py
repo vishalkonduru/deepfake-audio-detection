@@ -1,4 +1,4 @@
-"""Feature extraction utilities for deepfake audio detection."""
+"""Feature extraction with augmentation support for training set expansion."""
 
 import os
 import numpy as np
@@ -7,6 +7,10 @@ from tqdm import tqdm
 from typing import Tuple
 
 import config
+from augment import augment
+from logger import get_logger
+
+log = get_logger(__name__)
 
 
 def extract_mfcc(file_path: str, n_mfcc: int = config.N_MFCC) -> np.ndarray:
@@ -35,37 +39,69 @@ def extract_chroma(file_path: str) -> np.ndarray:
     return np.concatenate([np.mean(chroma, axis=1), np.std(chroma, axis=1)])
 
 
+def _features_from_waveform(y: np.ndarray, sr: int) -> np.ndarray:
+    """Compute full feature vector from a raw waveform array."""
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=config.N_MFCC)
+    mfcc_feat = np.concatenate([np.mean(mfcc, axis=1), np.std(mfcc, axis=1)])
+
+    centroid = librosa.feature.spectral_centroid(y=y, sr=sr)
+    bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr)
+    rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+    spec_feat = np.array([np.mean(centroid), np.std(centroid),
+                          np.mean(bandwidth), np.std(bandwidth),
+                          np.mean(rolloff), np.std(rolloff)])
+
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+    chroma_feat = np.concatenate([np.mean(chroma, axis=1), np.std(chroma, axis=1)])
+
+    return np.concatenate([mfcc_feat, spec_feat, chroma_feat])
+
+
 def extract_all_features(file_path: str) -> np.ndarray:
-    """Concatenate MFCC, spectral and chroma features."""
-    mfcc = extract_mfcc(file_path)
-    spectral = extract_spectral(file_path)
-    chroma = extract_chroma(file_path)
-    return np.concatenate([mfcc, spectral, chroma])
+    """Concatenate MFCC, spectral and chroma features for a file."""
+    y, sr = librosa.load(file_path, sr=config.SAMPLE_RATE, mono=True)
+    return _features_from_waveform(y, sr)
 
 
-def load_data(use_all_features: bool = False) -> Tuple[np.ndarray, np.ndarray]:
-    """Load real/fake audio and return feature matrix and labels."""
-    extractor = extract_all_features if use_all_features else extract_mfcc
+def load_data(
+    use_augmentation: bool = False,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Load real/fake audio and return feature matrix and labels.
+
+    Args:
+        use_augmentation: If True, expand training set with augmented variants.
+    """
     X, y = [], []
 
     for label, directory in ((0, config.REAL_DIR), (1, config.FAKE_DIR)):
         tag = "REAL" if label == 0 else "FAKE"
-        print(f"Processing {tag} audio from {directory} ...")
+        log.info("Processing %s audio from %s ...", tag, directory)
         for fname in tqdm(os.listdir(directory)):
             if not fname.lower().endswith(config.AUDIO_EXTS):
                 continue
             path = os.path.join(directory, fname)
             try:
-                X.append(extractor(path))
+                wav, sr = librosa.load(path, sr=config.SAMPLE_RATE, mono=True)
+                X.append(_features_from_waveform(wav, sr))
                 y.append(label)
+                if use_augmentation:
+                    for aug_wav in augment(wav, sr):
+                        X.append(_features_from_waveform(aug_wav, sr))
+                        y.append(label)
             except Exception as exc:
-                print(f"  [WARN] Skipping {fname}: {exc}")
+                log.warning("Skipping %s: %s", fname, exc)
 
     return np.array(X), np.array(y)
 
 
 if __name__ == "__main__":
-    X, y = load_data(use_all_features=True)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Extract audio features")
+    parser.add_argument("--augment", action="store_true", help="Enable data augmentation")
+    args = parser.parse_args()
+
+    X, y = load_data(use_augmentation=args.augment)
     np.save(config.FEATURES_OUT, X)
     np.save(config.LABELS_OUT, y)
-    print(f"Saved {config.FEATURES_OUT} and {config.LABELS_OUT} ({X.shape})")
+    log.info("Saved features %s, labels %s  shape=%s", config.FEATURES_OUT, config.LABELS_OUT, X.shape)
