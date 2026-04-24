@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Data and artifacts
+data/
+raw_data/
+*.zip
+features.npy
+labels.npy
+model.joblib
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
