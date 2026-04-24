@@ -1,23 +1,23 @@
- Deepfake Audio Detection for Phishing Calls
+# Deepfake Audio Detection for Phishing Calls
 
-This project detects AI‑generated (deepfake) speech in audio clips to help flag phishing calls and voice‑cloning fraud attempts. It uses MFCC audio features and a classical machine learning model (SVM), exposed through a simple REST API and optionally containerized with Docker.
+This project detects AI‑generated (deepfake) speech in audio clips to help flag phishing calls and voice‑cloning fraud attempts. It uses MFCC audio features and a classical machine learning model (SVM), exposed through a simple REST API and optionally containerized with Docker.[web:74][web:76][web:87]
 
 ---
 
- Problem Overview
+## Problem Overview
 
 Attackers increasingly use AI‑generated voices to impersonate trusted people (managers, family members, bank staff) over phone calls, tricking victims into sharing sensitive information or transferring money.[web:40][web:43]  
 The goal of this project is to analyze voice audio and estimate whether it is **REAL** (human) or **FAKE** (synthetic / deepfake), so that suspicious calls can be flagged in real time or in near‑real‑time.[web:39][web:44]
 
 ---
 
- Approach
+## Approach
 
- Dataset
+### Dataset
 
 For this prototype, we use the Kaggle dataset:
 
-- Real vs Fake Human Voice – Deepfake Audio Dataset
+- **Real vs Fake Human Voice – Deepfake Audio Dataset**[web:63]  
   - Contains recordings from different speakers (male/female, UK/USA).
   - Each speaker folder has:
     - `original.*` → real human voice.
@@ -28,7 +28,7 @@ These are mapped into:
 - `data/real/`  → originals (label 0).
 - `data/fake/` → synthetics (label 1).
 
- Features
+### Features
 
 We extract **MFCC (Mel‑Frequency Cepstral Coefficients)** for each audio file using `librosa`:[web:74][web:76]
 
@@ -39,7 +39,7 @@ We extract **MFCC (Mel‑Frequency Cepstral Coefficients)** for each audio file 
 
 This captures the timbral / spectral characteristics that differ between human and synthetic speech.[web:74]
 
- Model
+### Model
 
 We train a **Support Vector Machine (SVM)** classifier with an RBF kernel using `scikit‑learn`:[web:76]
 
@@ -61,7 +61,7 @@ This MFCC+SVM setup is a standard baseline in audio deepfake detection research 
 
 ---
 
- Project Structure
+## Project Structure
 
 ```text
 deepfake-audio-detection/
@@ -84,23 +84,23 @@ deepfake-audio-detection/
 
 ---
 
-Setup (Local, via WSL/Linux)
+## Setup (Local, via WSL/Linux)
 
- 1. Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/vishalkonduru/deepfake-audio-detection.git
 cd deepfake-audio-detection
 ```
 
- 2. Create and activate a virtual environment
+### 2. Create and activate a virtual environment
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Install dependencies
+### 3. Install dependencies
 
 ```bash
 pip install --upgrade pip
@@ -109,7 +109,7 @@ pip install -r requirements.txt
 
 ---
 
- Dataset Preparation
+## Dataset Preparation
 
 Download the Kaggle dataset (or use your own):
 
@@ -143,9 +143,9 @@ cp raw_data/USA/male/*/synthetic_*.*   data/fake/
 
 ---
 
- Training Pipeline
+## Training Pipeline
 
- 1. Extract features
+### 1. Extract features
 
 ```bash
 source .venv/bin/activate
@@ -160,7 +160,7 @@ This will:
   - `features.npy`
   - `labels.npy`
 
- 2. Train the SVM model
+### 2. Train the SVM model
 
 ```bash
 python train_model.py
@@ -176,7 +176,7 @@ This will:
 
 ---
 
- CLI Inference
+## CLI Inference
 
 To classify a single audio file from the command line:
 
@@ -203,11 +203,11 @@ Probabilities [REAL, FAKE]: [0.41 0.59]
 
 ---
 
- REST API (Flask)
+## REST API (Flask)
 
 The project includes a Flask app that exposes two endpoints: `/health` and `/predict`.
 
- Run the API (development)
+### Run the API (development)
 
 ```bash
 source .venv/bin/activate
@@ -218,9 +218,9 @@ By default, the server runs on:
 
 - `http://0.0.0.0:8000`
 
- Endpoints
+### Endpoints
 
- 1. Health check
+#### 1. Health check
 
 ```bash
 curl http://localhost:8000/health
@@ -232,7 +232,7 @@ Response:
 {"status": "ok"}
 ```
 
- 2. Predict (upload audio file)
+#### 2. Predict (upload audio file)
 
 ```bash
 curl -X POST \
@@ -268,11 +268,11 @@ Sample response:
 
 ---
 
- Docker Deployment
+## Docker Deployment
 
 For more production-like serving, use the provided Dockerfile and minimal requirements.
 
- 1. Build the Docker image
+### 1. Build the Docker image
 
 ```bash
 cd deepfake-audio-detection
@@ -287,7 +287,7 @@ This uses:
 - Installs only the minimal dependencies from `requirements-docker.txt`.
 - Runs the app with Gunicorn on port 8000. [web:83][web:86]
 
- 2. Run the container
+### 2. Run the container
 
 ```bash
 docker run -d -p 8000:8000 --name deepfake-audio-api deepfake-audio-api
@@ -310,7 +310,7 @@ curl -X POST \
 
 ---
 
- How This Applies to Phishing Calls
+## How This Applies to Phishing Calls
 
 In a real system integrated with telephony or VoIP:[web:39][web:44]
 
@@ -329,7 +329,7 @@ This project demonstrates the **core detection engine** that could be embedded i
 
 ---
 
-Limitations and Future Work
+## Limitations and Future Work
 
 - Current model is trained on a relatively small curated dataset and may not generalize to all real‑world deepfake engines or noisy phone environments. [web:41][web:45]
 - MFCC+SVM is lightweight but less powerful than larger CNN/transformer models; adding more robust features (CQCC, spectrogram CNNs) and training on diverse datasets (e.g., ASVspoof) would improve robustness.[web:41][web:74]
@@ -337,7 +337,7 @@ Limitations and Future Work
 
 ---
 
- License
+## License
 
 - Code: Your chosen license (e.g., MIT).  
 - Dataset: Follow the original Kaggle “Real vs Fake Human Voice – Deepfake Audio Dataset” license (CC BY‑NC‑ND 4.0). [web:63]
