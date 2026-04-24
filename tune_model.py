@@ -1,14 +1,14 @@
 """Hyperparameter search using GridSearchCV."""
 
-import numpy as np
-import joblib
 import json
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
+
+import joblib
+import numpy as np
+from sklearn.metrics import classification_report, roc_auc_score
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
-from sklearn.metrics import roc_auc_score, classification_report
-from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 import config
 

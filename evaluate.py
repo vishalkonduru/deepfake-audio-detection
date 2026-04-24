@@ -1,15 +1,16 @@
 """Evaluate a saved model and produce a classification report + confusion matrix plot."""
 
 import argparse
-import numpy as np
-import joblib
 import json
 from pathlib import Path
+
+import joblib
+import numpy as np
 from sklearn.metrics import (
+    ConfusionMatrixDisplay,
     classification_report,
     confusion_matrix,
     roc_auc_score,
-    ConfusionMatrixDisplay,
 )
 from sklearn.model_selection import train_test_split
 
@@ -28,7 +29,9 @@ def evaluate(model_path: str, features: str, labels: str, output_dir: str = ".")
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
 
-    report = classification_report(y_test, y_pred, target_names=["REAL", "FAKE"], output_dict=True)
+    report = classification_report(
+        y_test, y_pred, target_names=["REAL", "FAKE"], output_dict=True
+    )
     auc = roc_auc_score(y_test, y_proba)
     report["roc_auc"] = auc
 
@@ -44,6 +47,7 @@ def evaluate(model_path: str, features: str, labels: str, output_dir: str = ".")
     # Confusion matrix plot (requires matplotlib)
     try:
         import matplotlib.pyplot as plt
+
         cm = confusion_matrix(y_test, y_pred)
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["REAL", "FAKE"])
         fig, ax = plt.subplots()
@@ -51,7 +55,7 @@ def evaluate(model_path: str, features: str, labels: str, output_dir: str = ".")
         fig.savefig(out / "confusion_matrix.png", dpi=150, bbox_inches="tight")
         print(f"Saved confusion matrix to {out / 'confusion_matrix.png'}")
     except ImportError:
-        print("matplotlib not installed – skipping confusion matrix plot.")
+        print("matplotlib not installed \u2013 skipping confusion matrix plot.")
 
 
 if __name__ == "__main__":
