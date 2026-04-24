@@ -1,29 +1,48 @@
+"""CLI prediction tool."""
+
+import argparse
 import sys
+
 import joblib
-import librosa
 import numpy as np
 
-MODEL_OUT = "model.joblib"
+import config
+from extract_features import extract_all_features
 
-def extract_mfcc(file_path, n_mfcc=40):
-    y, sr = librosa.load(file_path, sr=16000, mono=True)
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
-    mfcc_mean = np.mean(mfcc, axis=1)
-    mfcc_std = np.std(mfcc, axis=1)
-    return np.concatenate([mfcc_mean, mfcc_std])
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python predict.py path/to/audio")
+def predict_file(file_path: str) -> dict:
+    """Load model, extract features from *file_path* and return prediction."""
+    try:
+        model = joblib.load(config.MODEL_OUT)
+    except FileNotFoundError:
+        print(f"[ERROR] Model not found at '{config.MODEL_OUT}'. Run train_model.py first.",
+              file=sys.stderr)
         sys.exit(1)
 
-    audio_path = sys.argv[1]
-    model = joblib.load(MODEL_OUT)
-
-    feat = extract_mfcc(audio_path).reshape(1, -1)
-    proba = model.predict_proba(feat)[0]
+    feat = extract_all_features(file_path).reshape(1, -1)
     pred = model.predict(feat)[0]
-
+    proba = model.predict_proba(feat)[0]
     label = "FAKE" if pred == 1 else "REAL"
-    print(f"Prediction: {label}")
-    print(f"Probabilities [REAL, FAKE]: {proba}")
+    return {
+        "file": file_path,
+        "label": label,
+        "confidence": float(max(proba)),
+        "probabilities": {"real": float(proba[0]), "fake": float(proba[1])},
+    }
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Deepfake audio detection – CLI predictor")
+    parser.add_argument("files", nargs="+", metavar="FILE", help="Audio file(s) to classify")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Print probabilities too")
+    args = parser.parse_args()
+
+    for fp in args.files:
+        result = predict_file(fp)
+        if args.verbose:
+            print(f"{result['file']}: {result['label']} "
+                  f"(confidence={result['confidence']:.3f}, "
+                  f"p_real={result['probabilities']['real']:.3f}, "
+                  f"p_fake={result['probabilities']['fake']:.3f})")
+        else:
+            print(f"{result['file']}: {result['label']}")

@@ -1,43 +1,107 @@
+"""Feature extraction with augmentation support for training set expansion."""
+
 import os
 import numpy as np
 import librosa
 from tqdm import tqdm
+from typing import Tuple
 
-REAL_DIR = "data/real"
-FAKE_DIR = "data/fake"
-FEATURES_OUT = "features.npy"
-LABELS_OUT = "labels.npy"
+import config
+from augment import augment
+from logger import get_logger
 
-def extract_mfcc(file_path, n_mfcc=40):
-    y, sr = librosa.load(file_path, sr=16000, mono=True)
+log = get_logger(__name__)
+
+
+def extract_mfcc(file_path: str, n_mfcc: int = config.N_MFCC) -> np.ndarray:
+    """Extract mean + std of MFCCs from an audio file."""
+    y, sr = librosa.load(file_path, sr=config.SAMPLE_RATE, mono=True)
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
-    mfcc_mean = np.mean(mfcc, axis=1)
-    mfcc_std = np.std(mfcc, axis=1)
-    return np.concatenate([mfcc_mean, mfcc_std])
+    return np.concatenate([np.mean(mfcc, axis=1), np.std(mfcc, axis=1)])
 
-def load_data():
-    X = []
-    y = []
-    print("Processing REAL audio...")
-    for fname in tqdm(os.listdir(REAL_DIR)):
-        if not fname.lower().endswith((".wav", ".flac", ".mp3", ".m4a")):
-            continue
-        path = os.path.join(REAL_DIR, fname)
-        X.append(extract_mfcc(path))
-        y.append(0)
 
-    print("Processing FAKE audio...")
-    for fname in tqdm(os.listdir(FAKE_DIR)):
-        if not fname.lower().endswith((".wav", ".flac", ".mp3", ".m4a")):
-            continue
-        path = os.path.join(FAKE_DIR, fname)
-        X.append(extract_mfcc(path))
-        y.append(1)
+def extract_spectral(file_path: str) -> np.ndarray:
+    """Extract spectral centroid, bandwidth and rolloff statistics."""
+    y, sr = librosa.load(file_path, sr=config.SAMPLE_RATE, mono=True)
+    centroid = librosa.feature.spectral_centroid(y=y, sr=sr)
+    bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr)
+    rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+    feats = []
+    for f in (centroid, bandwidth, rolloff):
+        feats += [np.mean(f), np.std(f)]
+    return np.array(feats)
+
+
+def extract_chroma(file_path: str) -> np.ndarray:
+    """Extract chroma feature statistics."""
+    y, sr = librosa.load(file_path, sr=config.SAMPLE_RATE, mono=True)
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+    return np.concatenate([np.mean(chroma, axis=1), np.std(chroma, axis=1)])
+
+
+def _features_from_waveform(y: np.ndarray, sr: int) -> np.ndarray:
+    """Compute full feature vector from a raw waveform array."""
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=config.N_MFCC)
+    mfcc_feat = np.concatenate([np.mean(mfcc, axis=1), np.std(mfcc, axis=1)])
+
+    centroid = librosa.feature.spectral_centroid(y=y, sr=sr)
+    bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr)
+    rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+    spec_feat = np.array([np.mean(centroid), np.std(centroid),
+                          np.mean(bandwidth), np.std(bandwidth),
+                          np.mean(rolloff), np.std(rolloff)])
+
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+    chroma_feat = np.concatenate([np.mean(chroma, axis=1), np.std(chroma, axis=1)])
+
+    return np.concatenate([mfcc_feat, spec_feat, chroma_feat])
+
+
+def extract_all_features(file_path: str) -> np.ndarray:
+    """Concatenate MFCC, spectral and chroma features for a file."""
+    y, sr = librosa.load(file_path, sr=config.SAMPLE_RATE, mono=True)
+    return _features_from_waveform(y, sr)
+
+
+def load_data(
+    use_augmentation: bool = False,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Load real/fake audio and return feature matrix and labels.
+
+    Args:
+        use_augmentation: If True, expand training set with augmented variants.
+    """
+    X, y = [], []
+
+    for label, directory in ((0, config.REAL_DIR), (1, config.FAKE_DIR)):
+        tag = "REAL" if label == 0 else "FAKE"
+        log.info("Processing %s audio from %s ...", tag, directory)
+        for fname in tqdm(os.listdir(directory)):
+            if not fname.lower().endswith(config.AUDIO_EXTS):
+                continue
+            path = os.path.join(directory, fname)
+            try:
+                wav, sr = librosa.load(path, sr=config.SAMPLE_RATE, mono=True)
+                X.append(_features_from_waveform(wav, sr))
+                y.append(label)
+                if use_augmentation:
+                    for aug_wav in augment(wav, sr):
+                        X.append(_features_from_waveform(aug_wav, sr))
+                        y.append(label)
+            except Exception as exc:
+                log.warning("Skipping %s: %s", fname, exc)
 
     return np.array(X), np.array(y)
 
+
 if __name__ == "__main__":
-    X, y = load_data()
-    np.save(FEATURES_OUT, X)
-    np.save(LABELS_OUT, y)
-    print("Saved", FEATURES_OUT, "and", LABELS_OUT)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Extract audio features")
+    parser.add_argument("--augment", action="store_true", help="Enable data augmentation")
+    args = parser.parse_args()
+
+    X, y = load_data(use_augmentation=args.augment)
+    np.save(config.FEATURES_OUT, X)
+    np.save(config.LABELS_OUT, y)
+    log.info("Saved features %s, labels %s  shape=%s", config.FEATURES_OUT, config.LABELS_OUT, X.shape)

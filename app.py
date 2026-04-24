@@ -44,7 +44,7 @@ def predict():
         proba = model.predict_proba(feat)[0]
         pred = model.predict(feat)[0]
 
-        # 0 = REAL, 1 = FAKE (same as extract_features.py)
+        # Labels: 0 = REAL, 1 = FAKE (same as extract_features.py)
         label = "REAL" if pred == 0 else "FAKE"
 
         return jsonify({
