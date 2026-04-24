@@ -1,0 +1,189 @@
+/* ============================================================
+   ANIMATIONS & KEYFRAMES
+   ============================================================ */
+
+/* === Entry Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  60%  { transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Stagger helpers */
+.anim-delay-1 { animation-delay: 0.05s; }
+.anim-delay-2 { animation-delay: 0.10s; }
+.anim-delay-3 { animation-delay: 0.15s; }
+.anim-delay-4 { animation-delay: 0.20s; }
+.anim-delay-5 { animation-delay: 0.25s; }
+.anim-delay-6 { animation-delay: 0.30s; }
+.anim-delay-7 { animation-delay: 0.35s; }
+.anim-delay-8 { animation-delay: 0.40s; }
+
+/* Page reveal on load */
+.page-enter {
+  animation: slideInUp 0.6s var(--ease-out) both;
+}
+
+.page-enter-1 { animation: slideInUp 0.6s var(--ease-out) 0.05s both; }
+.page-enter-2 { animation: slideInUp 0.6s var(--ease-out) 0.10s both; }
+.page-enter-3 { animation: slideInUp 0.6s var(--ease-out) 0.15s both; }
+.page-enter-4 { animation: slideInUp 0.6s var(--ease-out) 0.20s both; }
+.page-enter-5 { animation: slideInUp 0.6s var(--ease-out) 0.25s both; }
+
+/* === Continuous Animations === */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(56,189,248,0.3); }
+  50%       { box-shadow: 0 0 40px rgba(56,189,248,0.6); }
+}
+
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.5); }
+  50%       { transform: scaleY(1); }
+}
+
+/* Number counter roll */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* === Shimmer === */
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+
+.text-shimmer {
+  background: linear-gradient(90deg,
+    var(--txt-primary) 0%,
+    var(--clr-cyan) 30%,
+    var(--txt-primary) 60%,
+    var(--txt-primary) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* === Toast Notification === */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  align-items: flex-end;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border-2);
+  border-radius: var(--r-md);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-card);
+  max-width: 360px;
+  animation: toastIn 0.4s var(--ease-out);
+}
+
+.toast.is-leaving {
+  animation: toastOut 0.3s var(--ease-in) forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(16px) scale(0.96); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0) scale(1); max-height: 80px; }
+  to   { opacity: 0; transform: translateX(16px) scale(0.95); max-height: 0; padding: 0; margin: 0; }
+}
+
+.toast-icon { flex-shrink: 0; }
+.toast-text { font-size: 13.5px; color: var(--txt-secondary); line-height: 1.4; }
+.toast-title { font-weight: 600; color: var(--txt-primary); margin-bottom: 1px; }
+
+.toast--success .toast-icon { color: var(--clr-green); }
+.toast--error   .toast-icon { color: var(--clr-red); }
+.toast--info    .toast-icon { color: var(--clr-cyan); }
+.toast--warn    .toast-icon { color: var(--clr-amber); }
+
+/* === Modal === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  animation: fadeIn 0.25s var(--ease-out);
+}
+
+.modal-overlay.is-closing {
+  animation: fadeOut 0.2s var(--ease-in) forwards;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+.modal {
+  background: var(--clr-bg-2);
+  border: 1px solid var(--clr-border-2);
+  border-radius: var(--r-xl);
+  padding: var(--sp-8);
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  animation: scaleIn 0.3s var(--ease-out);
+}
