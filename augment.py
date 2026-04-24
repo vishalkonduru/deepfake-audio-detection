@@ -1,8 +1,9 @@
 """Data augmentation helpers for training set expansion."""
 
-import numpy as np
+from typing import List
+
 import librosa
-from typing import Tuple
+import numpy as np
 
 
 def add_gaussian_noise(y: np.ndarray, noise_factor: float = 0.005) -> np.ndarray:
@@ -30,7 +31,7 @@ def random_crop(y: np.ndarray, sr: int, duration: float = 1.0) -> np.ndarray:
     return np.pad(y, (0, target - len(y)))
 
 
-def augment(y: np.ndarray, sr: int) -> list:
+def augment(y: np.ndarray, sr: int) -> List[np.ndarray]:
     """Return a list of augmented variants of *y*."""
     variants = [
         add_gaussian_noise(y),
