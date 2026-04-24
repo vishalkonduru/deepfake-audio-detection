@@ -39,6 +39,18 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.route("/info", methods=["GET"])
+def info():
+    return jsonify(
+        {
+            "sample_rate": config.SAMPLE_RATE,
+            "n_mfcc": config.N_MFCC,
+            "supported_formats": list(config.AUDIO_EXTS),
+            "max_file_size_mb": config.MAX_FILE_SIZE_MB,
+        }
+    )
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:
