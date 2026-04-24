@@ -1,6 +1,8 @@
 /* ============================================================
-   BASE RESET & GLOBAL STYLES
+   BASE RESET & TYPOGRAPHY
    ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -9,88 +11,71 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: var(--clr-bg);
-  color: var(--txt-primary);
   font-family: var(--font-body);
+  background-color: var(--clr-bg);
+  color: var(--clr-text-primary);
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: none; /* using custom cursor */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--clr-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--clr-border);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--clr-accent-muted); }
+
+/* Selection */
+::selection {
+  background: var(--clr-accent-muted);
+  color: var(--clr-accent);
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
 }
 
 a {
-  color: var(--clr-cyan);
+  color: var(--clr-accent);
   text-decoration: none;
-  transition: opacity var(--dur-fast) var(--ease-out);
+  transition: opacity var(--dur-fast) var(--ease-smooth);
 }
 a:hover { opacity: 0.8; }
 
-img, video, canvas, svg {
+img, svg, canvas {
   display: block;
   max-width: 100%;
 }
 
 button {
-  cursor: none;
-  font-family: var(--font-body);
+  cursor: pointer;
   border: none;
   background: none;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 input, select, textarea {
-  font-family: var(--font-body);
+  font-family: inherit;
+  font-size: inherit;
 }
 
-::-webkit-scrollbar {
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  background: var(--clr-bg-2);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(56, 189, 248, 0.3);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(56, 189, 248, 0.5);
-}
-
-::selection {
-  background: var(--clr-cyan-dim);
-  color: var(--clr-cyan);
-}
-
-/* Focus visible ring */
-:focus-visible {
-  outline: 2px solid var(--clr-cyan);
-  outline-offset: 3px;
-  border-radius: var(--r-sm);
-}
-
-/* Utility classes */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-}
-
-.font-mono { font-family: var(--font-mono); }
-.font-display { font-family: var(--font-display); }
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--clr-cyan) 0%, var(--clr-violet) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+ul { list-style: none; }
