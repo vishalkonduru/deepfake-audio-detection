@@ -1,0 +1,33 @@
+import os
+import numpy as np
+import joblib
+import config
+
+from extract_features import extract_mfcc, extract_spectral
+
+REAL_DIR = "manual_test/real"
+FAKE_DIR = "manual_test/fake"
+
+def extract_full_features(file_path: str) -> np.ndarray:
+    """Use the same feature combo as training: MFCC + spectral stats."""
+    mfcc_feat = extract_mfcc(file_path, n_mfcc=config.N_MFCC)
+    spec_feat = extract_spectral(file_path)
+    return np.concatenate([mfcc_feat, spec_feat])
+
+def load_manual():
+       feat = extract_full_features(path)
+                X.append(feat)
+                y.append(label)
+                paths.append(path)
+            except Exception as e:
+                print("Error on", path, "->", e)
+    return np.array(X), np.array(y), paths
+
+if __name__ == "__main__":
+    model = joblib.load(config.MODEL_OUT)
+    X, y, paths = load_manual()
+    if len(X) == 0:
+        print("No manual test files found.")
+        raise SystemExit(0)
+    print("Manual feature shape:", X.shape)
+    preds = model.predict(X)
