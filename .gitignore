@@ -37,3 +37,11 @@ coverage.xml
 # OS
 .DS_Store
 Thumbs.db
+UK/
+USA/
+raw_data/
+deepfake_audio_dataset_jay15k/
+audio-deepfake-detection-dataset.zip
+deepfake-audio-dataset-fake-vs-real-speech.zip
+real-vs-fake-human-voice-deepfake-audio.zip
+dataset_voice_changing_metainfo.xlsx
